@@ -3,6 +3,7 @@ Solves wordsearch puzzles in Python.
 
 ### What is this? ###
 This repository creates the algorithm for solving a word search puzzle. The dictionary for finding words is words.json. These are in Dutch, so it can find Dutch words. It can be replaced with your own words.json in any language to find words from a word search puzzle. 
+
 >The code contains a regular and advanced function for finding words. The first one checks diagonally left to right en top to bottom, the advanced function diagonally as well.
 
 ## Example puzzle ##
