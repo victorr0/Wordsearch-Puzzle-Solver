@@ -1,16 +1,11 @@
 #!/usr/bin/python3
 
-# File name: wordsearch.py
-# a module wordsearch with a function solve. The function takes
-# the path to a text file with a word search puzzle, e.g. puzzle1.txt
-# Assignment by Victor for the Advanced Programming course
-# Date: 23-2-2016
-
-from collections import defaultdict
 import json
+import numpy as np
 
-with open('words.json','r',encoding='utf-8') as f:
+with open('dictionary.json','r',encoding='utf-8') as f:
     data = json.load(f)['words']
+
 solutions = set([item.upper() for item in data])
 
 def solve(file):
@@ -19,17 +14,17 @@ def solve(file):
     """
     word_grid = open(file,'r').read().split('\n')[:-1]
     found_words = []
-    regel_lr = {}
-    regel_tb = {}
-    directions = [regel_lr, regel_tb]
+    line_lr = {}
+    line_tb = {}
+    directions = [line_lr, line_tb]
 
     for line in word_grid:
-        regel_lr[word_grid.index(line)] = line
+        line_lr[word_grid.index(line)] = line
 
     for i in range(len(word_grid)):
-        regel_tb[i] = [(line[i]) for line in word_grid]
-        regel = regel_tb[i]
-        regel_tb[i] = (''.join(regel))
+        line_tb[i] = [(line[i]) for line in word_grid]
+        line = line_tb[i]
+        line_tb[i] = (''.join(line))
     
     for direction in directions:
         for line in direction:
@@ -40,38 +35,57 @@ def solve(file):
     return found_words
 
 def solve_advanced(file):
-    """
-    Still working on this, solves a wordsearch puzzle more advanced
-    """
+
     word_grid = open(file,'r').read().split('\n')[:-1]
     found_words = []
-    regel_lr = {}
-    regel_tb = {}
-    regel_rl = {}
-    regel_bt = {}
-    directions = [regel_lr, regel_tb, regel_rl, regel_bt]
+    line_lr = {}
+    line_tb = {}
+    line_rl = {}
+    line_bt = {}
+    line_hd_t = {}
+    line_hd_b = {}
+    line_ad_t = {}
+    line_ad_b = {}
+    directions = [line_lr, line_tb, line_rl, line_bt, line_hd_t, line_hd_b, line_ad_t, line_ad_b]
 
-    for line in word_grid:
-        regel_lr[word_grid.index(line)] = line
+    for i, line in enumerate(word_grid):
+        line_lr[i] = line
 
     for i in range(len(word_grid)):
-        regel_tb[i] = [(line[i]) for line in word_grid]
-        regel = regel_tb[i]
-        regel_tb[i] = (''.join(regel))
+        line_tb[i] = [(line[i]) for line in word_grid]
+        line = line_tb[i]
+        line_tb[i] = (''.join(line))
         
-    for i in regel_lr:
-        regel_rl[i] = [i for i in reversed(regel_lr[i])]
-        regel = regel_rl[i]
-        regel_rl[i] = (''.join(regel))
+    for i in line_lr:
+        line_rl[i] = [i for i in reversed(line_lr[i])]
+        line = line_rl[i]
+        line_rl[i] = (''.join(line))
         
-    for i in regel_tb:
-        regel_bt[i] = [i for i in reversed(regel_tb[i])]
-        regel = regel_bt[i]
-        regel_bt[i] = (''.join(regel))
+    for i in line_tb:
+        line_bt[i] = [i for i in reversed(line_tb[i])]
+        line = line_bt[i]
+        line_bt[i] = (''.join(line))
+
+    # current assumption is that the grid is square, this is easy to generalize (or pad)
+    new_grid = np.array([[s for s in x] for x in word_grid])
+    for i in range(-len(new_grid),len(new_grid)):
+        line_hd_t[i + len(new_grid)] = new_grid.diagonal(i)
+        line_hd_b[i + len(new_grid)] = reversed(new_grid.diagonal(i))
+
     
+    new_grid = np.flip(np.array([[s for s in x] for x in word_grid]), axis=0)
+    for i in range(-len(new_grid),len(new_grid)):
+        line_ad_t[i + len(new_grid)] = new_grid.diagonal(i)
+        line_ad_b[i + len(new_grid)] = reversed(new_grid.diagonal(i))
+
+    for dic in [line_hd_t, line_hd_b, line_ad_t, line_ad_b]:
+        for key in dic:
+            dic[key] = "".join(dic[key])
+
+
     for direction in directions:
         for line in direction:
             for word in solutions:
                 if word in direction[line]:
                     found_words.append(word)
-    return found_words
+    return set(list(filter(lambda x: len(x)>1,found_words)))

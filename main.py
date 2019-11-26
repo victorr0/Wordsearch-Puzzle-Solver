@@ -1,23 +1,17 @@
 #!/usr/bin/python3
 
-# File name: main.py
-# Executes the wordsearch function.
-# Assignment by Victor for the Advanced Programming course
-# Date: 23-2-2016
-
 from wordsearch import solve
 from wordsearch import solve_advanced
 
 
 def main():
-    #Testing wordsearch's solve & solve_advanced
-    file = 'puzzle1.txt'
-    print(solve(file))
-    print(solve_advanced(file))
-    
-    file = 'puzzle2.txt'
-    print(solve(file))
-    print(solve_advanced(file))
+
+    file = 'puzzle.txt'
+    sorted_solution = sorted(sorted(solve_advanced(file)), key=lambda x: len(x))
+    for i, sol in enumerate(sorted_solution):
+        print(sol, end="\t\t")
+        if i % 4 == 0:
+            print()
 
 main()
 
