@@ -1,91 +1,84 @@
-#!/usr/bin/python3
-
 import json
 import numpy as np
 
-with open('dictionary.json','r',encoding='utf-8') as f:
-    data = json.load(f)['words']
 
-solutions = set([item.upper() for item in data])
+class WordSolver:
 
-def solve(file):
-    """
-    Solves a wordsearch puzzle
-    """
-    word_grid = open(file,'r').read().split('\n')[:-1]
-    found_words = []
-    line_lr = {}
-    line_tb = {}
-    directions = [line_lr, line_tb]
+    def __init__(self, file, directions=None):
+        if directions is None:
+            self.directions = ["lr", "rl", "tb", "bt", "md_t", "md_b", "ad_t", "ad_b"]
+        self.file = file
+        self.word_grid = np.array(self.read_puzzle(self.file))
+        self.solutions = self.dictionary_entries()
+        self.rows = len(self.word_grid)
+        self.cols = len(self.word_grid[0])
 
-    for line in word_grid:
-        line_lr[word_grid.index(line)] = line
+    def solve(self):
+        lines = []
 
-    for i in range(len(word_grid)):
-        line_tb[i] = [(line[i]) for line in word_grid]
-        line = line_tb[i]
-        line_tb[i] = (''.join(line))
-    
-    for direction in directions:
-        for line in direction:
-            for word in solutions:
-                if word in direction[line]:
-                    found_words.append(word)
-         
-    return found_words
+        if "lr" in self.directions:
+            lines.extend(self.left_right())
+        if "rl" in self.directions:
+            lines.extend(self.right_left())
+        if "tb" in self.directions:
+            lines.extend(self.top_bottom())
+        if "bt" in self.directions:
+            lines.extend(self.bottom_top())
+        if "md_t" in self.directions:
+            lines.extend(self.main_diagonal_top())
+        if "md_b" in self.directions:
+            lines.extend(self.main_diagonal_bottom())
+        if "ad_t" in self.directions:
+            lines.extend(self.anti_diagonal_top())
+        if "ad_b" in self.directions:
+            lines.extend(self.anti_diagonal_bottom())
 
-def solve_advanced(file):
+        lines = list(map("".join, lines))
+        result = []
 
-    word_grid = open(file,'r').read().split('\n')[:-1]
-    found_words = []
-    line_lr = {}
-    line_tb = {}
-    line_rl = {}
-    line_bt = {}
-    line_hd_t = {}
-    line_hd_b = {}
-    line_ad_t = {}
-    line_ad_b = {}
-    directions = [line_lr, line_tb, line_rl, line_bt, line_hd_t, line_hd_b, line_ad_t, line_ad_b]
+        for line in lines:
+            for word in self.solutions:
+                if word in line:
+                    result.append(word)
 
-    for i, line in enumerate(word_grid):
-        line_lr[i] = line
+        set_longer_than_one = set(list(filter(lambda x: len(x) > 1, result)))
+        return sorted(sorted(set_longer_than_one), key=lambda x: len(x))
 
-    for i in range(len(word_grid)):
-        line_tb[i] = [(line[i]) for line in word_grid]
-        line = line_tb[i]
-        line_tb[i] = (''.join(line))
-        
-    for i in line_lr:
-        line_rl[i] = [i for i in reversed(line_lr[i])]
-        line = line_rl[i]
-        line_rl[i] = (''.join(line))
-        
-    for i in line_tb:
-        line_bt[i] = [i for i in reversed(line_tb[i])]
-        line = line_bt[i]
-        line_bt[i] = (''.join(line))
+    def left_right(self):
+        return list(self.word_grid)
 
-    # current assumption is that the grid is square, this is easy to generalize (or pad)
-    new_grid = np.array([[s for s in x] for x in word_grid])
-    for i in range(-len(new_grid),len(new_grid)):
-        line_hd_t[i + len(new_grid)] = new_grid.diagonal(i)
-        line_hd_b[i + len(new_grid)] = reversed(new_grid.diagonal(i))
+    def right_left(self):
+        return [list(reversed(line)) for line in self.word_grid]
 
-    
-    new_grid = np.flip(np.array([[s for s in x] for x in word_grid]), axis=0)
-    for i in range(-len(new_grid),len(new_grid)):
-        line_ad_t[i + len(new_grid)] = new_grid.diagonal(i)
-        line_ad_b[i + len(new_grid)] = reversed(new_grid.diagonal(i))
+    def top_bottom(self):
+        return [list(self.word_grid[:, i]) for i in range(self.cols)]
 
-    for dic in [line_hd_t, line_hd_b, line_ad_t, line_ad_b]:
-        for key in dic:
-            dic[key] = "".join(dic[key])
+    def bottom_top(self):
+        return [list(reversed(self.word_grid[:, i])) for i in range(self.cols)]
 
+    def main_diagonal_bottom(self):
+        return [list(self.word_grid.diagonal(i)) for i in range(-self.rows, self.cols)]
 
-    for direction in directions:
-        for line in direction:
-            for word in solutions:
-                if word in direction[line]:
-                    found_words.append(word)
-    return set(list(filter(lambda x: len(x)>1,found_words)))
+    def main_diagonal_top(self):
+        return [list(reversed(self.word_grid.diagonal(i))) for i in range(-self.rows, self.cols)]
+
+    def anti_diagonal_bottom(self):
+        new_grid = np.flip(np.array([[s for s in x] for x in self.word_grid]), axis=0)
+        return [list(new_grid.diagonal(i)) for i in range(-self.cols, self.rows)]
+
+    def anti_diagonal_top(self):
+        new_grid = np.flip(np.array([[s for s in x] for x in self.word_grid]), axis=0)
+        return [list(reversed(new_grid.diagonal(i))) for i in range(-self.cols, self.rows)]
+
+    @staticmethod
+    def read_puzzle(file):
+        word_grid = open(file, 'r').read().split('\n')
+        word_grid = [[letter for letter in line] for line in word_grid]
+        return list(filter(lambda x: len(x) > 0, word_grid))
+
+    @staticmethod
+    def dictionary_entries():
+        with open('dictionary.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)['words']
+
+        return set([item.upper() for item in data])

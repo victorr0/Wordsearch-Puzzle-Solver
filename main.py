@@ -1,17 +1,13 @@
-#!/usr/bin/python3
-
-from wordsearch import solve
-from wordsearch import solve_advanced
+from wordsearch import WordSolver
 
 
 def main():
 
-    file = 'puzzle.txt'
-    sorted_solution = sorted(sorted(solve_advanced(file)), key=lambda x: len(x))
-    for i, sol in enumerate(sorted_solution):
+    solver = WordSolver('puzzle.txt')
+    for i, sol in enumerate(solver.solve()):
         print(sol, end="\t\t")
         if i % 4 == 0:
             print()
 
-main()
 
+main()
