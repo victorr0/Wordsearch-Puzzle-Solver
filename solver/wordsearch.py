@@ -24,13 +24,13 @@ class WordSolver:
         if "bt" in self.directions:
             lines.extend(self.bottom_top())
         if "md_t" in self.directions:
-            lines.extend(self.main_diagonal_top())
+            lines.extend(self.main_diagonal_bottom_top())
         if "md_b" in self.directions:
-            lines.extend(self.main_diagonal_bottom())
+            lines.extend(self.main_diagonal_top_bottom())
         if "ad_t" in self.directions:
-            lines.extend(self.anti_diagonal_top())
+            lines.extend(self.anti_diagonal_top_bottom())
         if "ad_b" in self.directions:
-            lines.extend(self.anti_diagonal_bottom())
+            lines.extend(self.anti_diagonal_bottom_top())
 
         lines = list(map("".join, lines))
         result = []
@@ -55,23 +55,28 @@ class WordSolver:
     def bottom_top(self):
         return [list(reversed(self.word_grid[:, i])) for i in range(self.cols)]
 
-    def main_diagonal_bottom(self):
-        return [list(self.word_grid.diagonal(i)) for i in range(-self.rows, self.cols)]
-
-    def main_diagonal_top(self):
+    def main_diagonal_top_bottom(self):
         return [
-            list(reversed(self.word_grid.diagonal(i)))
-            for i in range(-self.rows, self.cols)
+            list(self.word_grid.diagonal(i)) for i in range(-self.rows + 1, self.cols)
         ]
 
-    def anti_diagonal_bottom(self):
-        new_grid = np.flip(np.array([[s for s in x] for x in self.word_grid]), axis=0)
-        return [list(new_grid.diagonal(i)) for i in range(-self.cols, self.rows)]
-
-    def anti_diagonal_top(self):
-        new_grid = np.flip(np.array([[s for s in x] for x in self.word_grid]), axis=0)
+    def main_diagonal_bottom_top(self):
         return [
-            list(reversed(new_grid.diagonal(i))) for i in range(-self.cols, self.rows)
+            list(reversed(self.word_grid.diagonal(i)))
+            for i in range(-self.rows + 1, self.cols)
+        ]
+
+    def anti_diagonal_bottom_top(self):
+        new_grid = np.flip(np.array([[s for s in x] for x in self.word_grid]), axis=1)
+        return [
+            list(reversed(new_grid.diagonal(i)))
+            for i in range(self.cols - 1, -self.rows, -1)
+        ]
+
+    def anti_diagonal_top_bottom(self):
+        new_grid = np.flip(np.array([[s for s in x] for x in self.word_grid]), axis=1)
+        return [
+            list(new_grid.diagonal(i)) for i in range(self.cols - 1, -self.rows, -1)
         ]
 
     @staticmethod
@@ -82,7 +87,7 @@ class WordSolver:
 
     @staticmethod
     def dictionary_entries():
-        with open("dictionary.json", "r", encoding="utf-8") as f:
+        with open("solver/dictionary.json", "r", encoding="utf-8") as f:
             data = json.load(f)["words"]
 
         return set([item.upper() for item in data])
