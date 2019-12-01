@@ -3,7 +3,6 @@ import numpy as np
 
 
 class WordSolver:
-
     def __init__(self, file, directions=None):
         if directions is None:
             self.directions = ["lr", "rl", "tb", "bt", "md_t", "md_b", "ad_t", "ad_b"]
@@ -60,7 +59,10 @@ class WordSolver:
         return [list(self.word_grid.diagonal(i)) for i in range(-self.rows, self.cols)]
 
     def main_diagonal_top(self):
-        return [list(reversed(self.word_grid.diagonal(i))) for i in range(-self.rows, self.cols)]
+        return [
+            list(reversed(self.word_grid.diagonal(i)))
+            for i in range(-self.rows, self.cols)
+        ]
 
     def anti_diagonal_bottom(self):
         new_grid = np.flip(np.array([[s for s in x] for x in self.word_grid]), axis=0)
@@ -68,17 +70,19 @@ class WordSolver:
 
     def anti_diagonal_top(self):
         new_grid = np.flip(np.array([[s for s in x] for x in self.word_grid]), axis=0)
-        return [list(reversed(new_grid.diagonal(i))) for i in range(-self.cols, self.rows)]
+        return [
+            list(reversed(new_grid.diagonal(i))) for i in range(-self.cols, self.rows)
+        ]
 
     @staticmethod
     def read_puzzle(file):
-        word_grid = open(file, 'r').read().split('\n')
+        word_grid = open(file, "r").read().split("\n")
         word_grid = [[letter for letter in line] for line in word_grid]
         return list(filter(lambda x: len(x) > 0, word_grid))
 
     @staticmethod
     def dictionary_entries():
-        with open('dictionary.json', 'r', encoding='utf-8') as f:
-            data = json.load(f)['words']
+        with open("dictionary.json", "r", encoding="utf-8") as f:
+            data = json.load(f)["words"]
 
         return set([item.upper() for item in data])
