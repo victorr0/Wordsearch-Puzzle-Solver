@@ -3,10 +3,10 @@ import numpy as np
 from solver.wordsearch import WordSolver
 
 board_long = np.array([["A", "B"], ["C", "D"], ["E", "F"], ["G", "H"]])
-long = WordSolver("tests/long.txt")
+long = WordSolver(file="tests/long.txt", dictionary="solver/dictionary.json")
 
 board_wide = np.array([["A", "B", "C", "D"], ["E", "F", "G", "H"]])
-wide = WordSolver("tests/wide.txt")
+wide = WordSolver(file="tests/wide.txt", dictionary="solver/dictionary.json")
 
 
 def test_horizontal_from_left():
@@ -130,7 +130,6 @@ def test_diag_anti_from_top():
     sol = long.anti_diagonal_top_bottom()
 
     # expected
-    print(sol)
     assert all([A == E for A, E in zip(sol[0], ["A"])])
     assert all([A == E for A, E in zip(sol[1], ["B", "C"])])
     assert all([A == E for A, E in zip(sol[2], ["D", "E"])])
@@ -139,7 +138,6 @@ def test_diag_anti_from_top():
 
     # given
     sol = wide.anti_diagonal_top_bottom()
-    print(sol)
     # expected
     assert all([A == E for A, E in zip(sol[0], ["A"])])
     assert all([A == E for A, E in zip(sol[1], ["B", "E"])])
@@ -153,7 +151,6 @@ def test_diag_anti_from_bottom():
     sol = long.anti_diagonal_bottom_top()
 
     # expected
-    print(sol)
     assert all([A == E for A, E in zip(sol[0], ["A"])])
     assert all([A == E for A, E in zip(sol[1], ["C", "B"])])
     assert all([A == E for A, E in zip(sol[2], ["E", "D"])])
@@ -162,11 +159,9 @@ def test_diag_anti_from_bottom():
 
     # given
     sol = wide.anti_diagonal_bottom_top()
-    print(sol)
     # expected
     assert all([A == E for A, E in zip(sol[0], ["A"])])
     assert all([A == E for A, E in zip(sol[1], ["E", "B"])])
     assert all([A == E for A, E in zip(sol[2], ["F", "C"])])
     assert all([A == E for A, E in zip(sol[3], ["G", "D"])])
     assert all([A == E for A, E in zip(sol[4], ["H"])])
-

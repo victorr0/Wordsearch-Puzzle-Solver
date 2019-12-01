@@ -3,10 +3,11 @@ import numpy as np
 
 
 class WordSolver:
-    def __init__(self, file, directions=None):
+    def __init__(self, file, dictionary, directions=None):
         if directions is None:
             self.directions = ["lr", "rl", "tb", "bt", "md_t", "md_b", "ad_t", "ad_b"]
         self.file = file
+        self.dictionary = dictionary
         self.word_grid = np.array(self.read_puzzle(self.file))
         self.solutions = self.dictionary_entries()
         self.rows = len(self.word_grid)
@@ -79,15 +80,14 @@ class WordSolver:
             list(new_grid.diagonal(i)) for i in range(self.cols - 1, -self.rows, -1)
         ]
 
+    def dictionary_entries(self):
+        with open(self.dictionary, "r", encoding="utf-8") as f:
+            data = json.load(f)["words"]
+
+        return set([item.upper() for item in data])
+
     @staticmethod
     def read_puzzle(file):
         word_grid = open(file, "r").read().split("\n")
         word_grid = [[letter for letter in line] for line in word_grid]
         return list(filter(lambda x: len(x) > 0, word_grid))
-
-    @staticmethod
-    def dictionary_entries():
-        with open("solver/dictionary.json", "r", encoding="utf-8") as f:
-            data = json.load(f)["words"]
-
-        return set([item.upper() for item in data])
