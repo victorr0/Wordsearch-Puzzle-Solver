@@ -1,28 +1,20 @@
-# Wordsearch-Puzzle-Solver
-Solves wordsearch puzzles in Python.
+## ![badge](https://github.com/ArnoCo/word_search_dictionary_solver/workflows/Lint%20and%20Test/badge.svg)  word_search_dictionary_solver 
+Solves word search puzzles in Python using a provided dictionary. The provided one is a JSON file containing Dutch words, replace this one if you're looking for another language.
 
-### What is this? ###
-This repository creates the algorithm for solving a word search puzzle. The dictionary for finding words is words.json. These are in Dutch, so it can find Dutch words. It can be replaced with your own words.json in any language to find words from a word search puzzle. 
+#### Forked from https://github.com/victorr0/Wordsearch-Puzzle-Solver ##
+- Diagonal lines supported
+- Extended the provided dutch dictionary
+- Restructured solver so certain checks can be enabled/disabled easily
 
->The code contains a regular and advanced function for finding words. The first one checks diagonally left to right en top to bottom, the advanced function diagonally as well.
+#### Installation
 
-## Example puzzle ##
-![Alt text](/wordsearch_puzzle.jpg?raw=true "Example of the game")
+```
+pip install -r requirements.txt
+```
 
-## Example results! ##
-![Alt text](/wordsearch_solutions.jpg?raw=true "Example of the game")
+#### Running the code
 
-## Requirements ##
-If you havn't already, install simplejson using
-><code>pip3 install simplejson</code>
-<ul>
-<li>Python 3.+</li>
-<li>simplejson</li>
-</ul>
-
-## Running the code ##
-Clone this repository
-><code>git clone https://github.com/victorr0/Wordsearch-Puzzle-Solver.git </code>
-
-Start the game with the command:
-><code>python3 main.py </code>
+Solve the `puzzle.txt` file by running:
+```
+python3 -m solver.main
+```
